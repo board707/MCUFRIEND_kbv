@@ -81,7 +81,7 @@ Pinout variant 2 mostly uses pins that don't have alternative features like PWM 
 To choose between options, uncomment one of the lines **`#define USE_W80X_PINOUT1`** or **`#define USE_W80X_PINOUT2`** at the beginning of the file `utility/mcufriend_special.h`.
 
 ## Links
-[FastLED library](https://github.com/FastLED/FastLED)
+[MCUFRIEND_kbv library](https://github.com/prenticedavid/MCUFRIEND_kbv)
 
 [W80x Arduino package](https://github.com/board707/w80x_arduino)
 
