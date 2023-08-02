@@ -1,30 +1,88 @@
-#MCUFRIEND_kbv 
-Library for Uno 2.4, 2.8, 3.5, 3.6, 3.95 inch mcufriend  Shields
+MCUFRIEND_kbv port for W80x controllers
+===========
 
-1. The Arduino Library Manager should find and install MCUFRIEND_kbv library
+This is a version of MCUFRIEND_kbv library with a support of w80x controllers. I will make a pull request to original MCUFRIEND_kbv repository.
 
-2. Install the Adafruit_GFX library if not already in your User libraries.
+## Connections
 
-3. Insert your Mcufriend style display shield into UNO.   Only 28-pin shields are supported.
+<table>
+    <thead>
+        <tr>
+            <th>LCD pins</th>
+            <th>W80x pins, var 1 </th>
+            <th>W80x pins, var 2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td align="center">LCD_D0</td>
+            <td align="center">PB0</td>
+            <td align="center">PB4</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D1</td>
+            <td align="center">PB1</td>
+            <td align="center">PB5</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D2</td>
+            <td align="center">PB2</td>
+            <td align="center">PB6</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D3</td>
+            <td align="center">PB3</td>
+            <td align="center">PB7</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D4</td>
+            <td align="center">PB4</td>
+            <td align="center">PB8</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D5</td>
+            <td align="center">PB5</td>
+            <td align="center">PB9</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D6</td>
+            <td align="center">PB6</td>
+            <td align="center">PB10</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_D7</td>
+            <td align="center">PB7</td>
+            <td align="center">PB11</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_RD</td>
+            <td colspan =2 align="center">PA7</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_WR</td>
+            <td colspan =2 align="center">PA8</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_RS</td>
+            <td colspan =2 align="center">PA9</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_CS</td>
+            <td colspan =2 align="center">PA10</td>
+        </tr>
+        <tr>
+            <td align="center">LCD_RST</td>
+            <td colspan =2 align="center">PA11</td>
+        </tr>
+    </tbody>
+</table>
 
-4. Build any of the Examples from the File->Examples->Mcufriend_kbv menu.  e.g.
+Pinout variant 2 mostly uses pins that don't have alternative features like PWM or SPI. However, the display output may be slightly slower in this case.
+To choose between options, uncomment one of the lines **`#define USE_W80X_PINOUT1`** or **`#define USE_W80X_PINOUT2`** at the beginning of the file `utility/mcufriend_special.h`.
 
-graphictest_kbv.ino: shows all the methods.
+## Links
+[FastLED library](https://github.com/FastLED/FastLED)
 
-LCD_ID_readreg.ino:  diagnostic check to identify unsupported controllers.
+[W80x Arduino package](https://github.com/board707/w80x_arduino)
 
-MCUFRIEND_kbv inherits all the methods from 
-the Adafruit_GFX class: https://learn.adafruit.com/adafruit-gfx-graphics-library/overview 
-and Print class: https://www.arduino.cc/en/Serial/Print
-
-The only "new" methods are hardware related: 
-vertScroll(), readGRAM(), readPixel(), setAddrWindow(), pushColors(), readID(), begin()
-
-readReg(), pushCommand() access the controller registers
-
-The File layout changed with v2.9.3.   If replacing a pre-v2.9.3 library:
-Please leave IDE.  Delete the existing MCUFRIEND_kbv folder.  Start the IDE.  Install from Library Manager.
-
-HOW TO INSTALL AND USE: is now in "mcufriend_how_to.txt"
-
-CHANGE HISTORY:         is now in "mcufriend_history.txt"
+Original MCUFRIEND_kbv [README](README_orig.md).

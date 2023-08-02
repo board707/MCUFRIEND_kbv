@@ -23,6 +23,8 @@
 //#define USE_CURIOSITY_AVR128DB48
 //#define USE_M0_PINOUT             //Chinese M0 boards have Zero bootloader but M0_PRO pinout
 
+//#define USE_W80X_PINOUT1         //Data pins PB0-7, control pins PA7-11
+#define USE_W80X_PINOUT2           //Data pins PB4-11, control pins PA7-11
 
 /*
 HX8347A  tWC =100ns  tWRH = 35ns  tRCFM = 450ns  tRC = ?  ns
@@ -1235,6 +1237,68 @@ static __attribute((always_inline)) void write_8(uint8_t val)
 #define READ_8(dst)   { RD_STROBE; READ_DELAY; dst = read_8(); RD_IDLE; }
 #define READ_16(dst)  { uint8_t hi; READ_8(hi); READ_8(dst); dst |= (hi << 8); }
 
+//####################################### W80X_arduino ############################
+//UNTESTED
+#elif defined(ARDUINO_HLK_w80x) && (defined(USE_W80X_PINOUT1) || defined(USE_W80X_PINOUT2))
+//LCD pins        |D7   |D6   |D5  |D4  |D3  |D2  |D1  |D0  |  |RD  |WR  |RS  |CS  |RST |
+//W806 pinout1    |PB7  |PB6  |PB5 |PB4 |PB3 |PB2 |PB1 |PB0 |  |PA7 |PA8 |PA9 |PA10 |PA11 |
+//W806 pinout2    |PB11 |PB10 |PB9 |PB8 |PB7 |PB6 |PB5 |PB4 |  |PA7 |PA8 |PA9 |PA10 |PA11 |
+
+#warning USE_W80X_PINOUT
+
+#define IDLE_DELAY  { }
+#define WRITE_DELAY { }
+#define READ_DELAY  { }
+//#define WRITE_DELAY { WR_ACTIVE; }
+//#define READ_DELAY  { RD_ACTIVE; }
+
+#define RD_PORT GPIOA
+#define RD_PIN  7      
+#define WR_PORT GPIOA
+#define WR_PIN  8       
+#define CD_PORT GPIOA
+#define CD_PIN  9       
+#define CS_PORT GPIOA
+#define CS_PIN  10       
+#define RESET_PORT GPIOA
+#define RESET_PIN  11   
+ 
+#define DATA_PORT GPIOB
+
+#if defined(USE_W80X_PINOUT1)
+#define MASK 0xFF
+#define INV_MASK 0xFFFFFF00
+
+#define GPIO_INIT()   { pinMode(PA7,INPUT); pinMode(PA8,INPUT); pinMode(PA9,INPUT); pinMode(PA10,INPUT); pinMode(PA15,INPUT);\
+        pinMode(PB0,OUTPUT);pinMode(PB1,OUTPUT);pinMode(PB2,OUTPUT);pinMode(PB3,OUTPUT); \
+        pinMode(PB4,OUTPUT);pinMode(PB5,OUTPUT);pinMode(PB6,OUTPUT);pinMode(PB7,OUTPUT);}
+        
+#define write_8(x)   { DATA_PORT->DATA &= INV_MASK;  DATA_PORT->DATA |= x; }
+#define read_8()      ((DATA_PORT -> DATA) & MASK)
+
+#elif defined(USE_W80X_PINOUT2)     
+#define MASK 0xFF0
+#define INV_MASK 0xFFFFF00F
+
+#define GPIO_INIT()   { pinMode(PA7,INPUT); pinMode(PA8,INPUT); pinMode(PA9,INPUT); pinMode(PA10,INPUT); pinMode(PA15,INPUT);\
+        pinMode(PB8,OUTPUT);pinMode(PB9,OUTPUT);pinMode(PB10,OUTPUT);pinMode(PB11,OUTPUT); \
+        pinMode(PB4,OUTPUT);pinMode(PB5,OUTPUT);pinMode(PB6,OUTPUT);pinMode(PB7,OUTPUT);}
+
+#define write_8(x)   { DATA_PORT->DATA &= INV_MASK;  DATA_PORT->DATA |= x << 4; }
+#define read_8()      (((DATA_PORT -> DATA) & MASK) >> 4)
+#endif
+
+#define setWriteDir() { DATA_PORT -> DIR |= MASK; }
+#define setReadDir()  { DATA_PORT -> DIR &= INV_MASK; }
+#define write8(x)     { write_8(x); WRITE_DELAY; WR_STROBE; IDLE_DELAY; }// HX8357-D is slower
+#define write16(x)    { uint8_t h = (x)>>8, l = x; write8(h); write8(l); }
+#define READ_8(dst)   { RD_STROBE; READ_DELAY; dst = read_8(); RD_IDLE; }
+#define READ_16(dst)  { RD_STROBE; READ_DELAY; dst = read_8(); RD_IDLE; RD_STROBE; dst = (dst<<8) | read_8(); RD_IDLE; }
+
+#define PIN_LOW(p, b)        p->DATA &= ~(1<<(b))
+#define PIN_HIGH(p, b)       p->DATA |= (1<<(b))
+#define PIN_OUTPUT(p, b)     SET_BIT(p->DIR, (1<<(b)))
+#define PIN_INPUT(p, b)      CLEAR_BIT(p->DIR, (1<<(b)))
 //####################################### ADIGITALEU_TEENSY ############################
 //UNTESTED
 #elif defined(__MK66FX1M0__) && defined(USE_ADIGITALEU_TEENSY)  // 16bit on a Teensy 3.6
